@@ -24,12 +24,8 @@ jobs:
     - name: Build project
       run: dotnet build --configuration Release --no-restore
 
-    - name: Extract version from .csproj
-      id: version
-      run: echo "VERSION=$(grep -oPm1 '(?<=<Version>)[^<]+' SharingMessages/SharingMessages.csproj)" >> $GITHUB_ENV
-
     - name: Pack NuGet package
-      run: dotnet pack --configuration Release -p:PackageVersion=${{ env.VERSION }} --no-build --output ./nupkg
+      run: dotnet pack --configuration Release --no-build --output ./nupkg
 
     - name: Publish NuGet package
       env:
