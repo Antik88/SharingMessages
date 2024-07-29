@@ -1,0 +1,39 @@
+name: Deploy NuGet
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build project
+      run: dotnet build --configuration Release --no-restore
+
+    - name: 'Get version'
+      id: version
+      uses: antik88/get-version-action@v2
+
+    - name: Pack NuGet package
+      run: dotnet pack --configuration Release -p:PackageVersion=${{ steps.version.outputs.version-without-v }} --no-build --output ./nupkg
+
+    - name: Publish NuGet package
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+      run: dotnet nuget push ./nupkg/*.nupkg -k $NUGET_API_KEY -s https://nuget.pkg.github.com/antik88/index.json
