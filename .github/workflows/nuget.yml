@@ -13,12 +13,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install GitVersion
-      run: dotnet tool install --global GitVersion.Tool
-
-    - name: Generate Version
+    - name: Use GitVersion
       id: gitversion
-      run: gitversion /output json /showvariable FullSemVer
+      uses: gittools/actions/gitversion/execute@v0.9.14
+      with:
+        useConfigFile: false
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
