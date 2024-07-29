@@ -7,7 +7,7 @@ on:
 jobs:
   deploy:
     name: Deploy
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     
     steps:
     - name: Checkout repository
@@ -26,11 +26,7 @@ jobs:
 
     - name: Extract version from .csproj
       id: version
-      shell: pwsh
-      run: |
-        $csprojPath = '<SahringMessages>.csproj'
-        $version = Select-String -Path $csprojPath -Pattern '<Version>(.*?)</Version>' | ForEach-Object { $_.Matches.Groups[1].Value }
-        echo "##[set-output name=VERSION;]$version"
+      run: echo "::set-output name=VERSION::$(grep -oPm1 '(?<=<Version>)[^<]+' <YOUR_PROJECT_FILE>.csproj)"
 
     - name: Pack NuGet package
       run: dotnet pack --configuration Release -p:PackageVersion=${{ steps.version.outputs.VERSION }} --no-build --output ./nupkg
