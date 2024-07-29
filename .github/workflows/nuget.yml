@@ -1,6 +1,5 @@
 name: Deploy NuGet
 
-
 on:
   push:
     branches: [ "main" ]
@@ -25,15 +24,14 @@ jobs:
     - name: Build project
       run: dotnet build --configuration Release --no-restore
 
-    - name: 'Get version'
+    - name: Extract version from .csproj
       id: version
-      uses: antik88/get-version-action@v2
+      run: echo "::set-output name=VERSION::$(grep -oPm1 '(?<=<Version>)[^<]+' <SharingMessages>.csproj)"
 
     - name: Pack NuGet package
-      run: dotnet pack --configuration Release -p:PackageVersion=${{ steps.version.outputs.version-without-v }} --no-build --output ./nupkg
+      run: dotnet pack --configuration Release -p:PackageVersion=${{ steps.version.outputs.VERSION }} --no-build --output ./nupkg
 
     - name: Publish NuGet package
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-
-      run: dotnet nuget push ./nupkg/*.nupkg -k $NUGET_API_KEY -s https://nuget.pkg.github.com/antik88/index.json
+      run: dotnet nuget push ./nupkg/*.nupkg -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json
