@@ -26,10 +26,10 @@ jobs:
 
     - name: Extract version from .csproj
       id: version
-      run: echo "::set-output name=VERSION::$(grep -oPm1 '(?<=<Version>)[^<]+' <YOUR_PROJECT_FILE>.csproj)"
+      run: echo "VERSION=$(grep -oPm1 '(?<=<Version>)[^<]+' <YOUR_PROJECT_FILE>.csproj)" >> $GITHUB_ENV
 
     - name: Pack NuGet package
-      run: dotnet pack --configuration Release -p:PackageVersion=${{ steps.version.outputs.VERSION }} --no-build --output ./nupkg
+      run: dotnet pack --configuration Release -p:PackageVersion=${{ env.VERSION }} --no-build --output ./nupkg
 
     - name: Publish NuGet package
       env:
