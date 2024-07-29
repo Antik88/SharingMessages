@@ -18,6 +18,17 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/execute@v0.9.14
+      id: gitversion
+      with:
+        useConfigFile: false
+
+    - name: Update .csproj with Version
+      run: |
+        VERSION=${{ steps.gitversion.outputs.FullSemVer }}
+        sed -i "s/<Version>.*<\/Version>/<Version>$VERSION<\/Version>/" **/*.csproj
+
     - name: Restore dependencies
       run: dotnet restore
 
@@ -30,4 +41,4 @@ jobs:
     - name: Publish NuGet package
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: dotnet nuget push ./nupkg/*.nupkg -k $NUGET_API_KEY -s https://nuget.pkg.github.com/antik88/index.json 
+      run: dotnet nuget push ./nupkg/*.nupkg -k $NUGET_API_KEY -s https://nuget.pkg.github.com/antik88/index.json
