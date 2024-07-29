@@ -26,7 +26,11 @@ jobs:
 
     - name: Extract version from .csproj
       id: version
-      run: echo "::set-output name=VERSION::$(grep -oPm1 '(?<=<Version>)[^<]+' <SharingMessages>.csproj)"
+      shell: pwsh
+      run: |
+        $csprojPath = '<SahringMessages>.csproj'
+        $version = Select-String -Path $csprojPath -Pattern '<Version>(.*?)</Version>' | ForEach-Object { $_.Matches.Groups[1].Value }
+        echo "##[set-output name=VERSION;]$version"
 
     - name: Pack NuGet package
       run: dotnet pack --configuration Release -p:PackageVersion=${{ steps.version.outputs.VERSION }} --no-build --output ./nupkg
