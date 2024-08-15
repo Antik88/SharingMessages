@@ -6,4 +6,5 @@ public record RentRecord(Guid Id,
     UserModel Tenant,
     DateTime StartDate,
     DateTime EndDate,
+    string Status,
     MessageType MessageType = MessageType.NewRent);
