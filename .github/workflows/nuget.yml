@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy
+    name: Deploy to NuGet.org
     runs-on: ubuntu-latest
     
     steps:
@@ -27,7 +27,7 @@ jobs:
     - name: Pack NuGet package
       run: dotnet pack --configuration Release --no-build --output ./nupkg
 
-    - name: Publish NuGet package
+    - name: Publish NuGet package to nuget.org
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: dotnet nuget push ./nupkg/*.nupkg -k $NUGET_API_KEY -s https://nuget.pkg.github.com/antik88/index.json 
+      run: dotnet nuget push ./nupkg/*.nupkg -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json
